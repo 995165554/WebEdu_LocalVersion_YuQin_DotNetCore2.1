@@ -1,0 +1,74 @@
+﻿using System;
+using System.Reflection;
+using System.Web.Mvc;
+
+namespace EDSS.Controllers
+{
+    public class TryAttributeTypeController : Controller
+    {
+
+        public ContentResult Index()
+        {
+            
+
+           // Assembly executingAssembly = Assembly.GetExecutingAssembly();
+           //Type try2AttributeType = executingAssembly.GetType(try2Attribute.GetType().ToString());//这是通过反射获取特性类型的方式，需要时可选用。
+            
+            System.Attribute[] attributeArray = System.Attribute.GetCustomAttributes(typeof(TryClass1));  // reflection
+            String sStringTemp = "";
+             foreach (Attribute attribute in attributeArray)
+             {
+                 if (attribute is Try1Attribute)
+                 {
+                     Try1Attribute try1Attribute = (Try1Attribute)attribute;
+                     sStringTemp = sStringTemp + (try1Attribute.stringSoftwareName + "、" + try1Attribute.stringSoftwareVersion+ "、" +try1Attribute.stringComment + "、" + try1Attribute.LastModificationDate);
+            }
+            }
+            return this.Content(sStringTemp);
+        }
+    }
+
+
+
+    [AttributeUsageAttribute(AttributeTargets.Class | AttributeTargets.Assembly | AttributeTargets.Property|AttributeTargets.ReturnValue, AllowMultiple = true, Inherited = false)]
+    public class Try1Attribute : Attribute
+    {
+        
+        public string stringSoftwareName{ set; get; }
+        public string stringSoftwareVersion{ set; get; }
+        public string stringComment { set; get; }
+        public string LastModificationDate { set; get; }
+
+        public Try1Attribute(String stringSoftwareName, String stringSoftwareVersion)
+        {
+            this.stringSoftwareName = stringSoftwareName;
+            this.stringSoftwareVersion = stringSoftwareVersion;
+        }
+    }
+
+    [AttributeUsageAttribute(AttributeTargets.All, AllowMultiple = true, Inherited = false)]
+    public class Try2Attribute: Attribute
+    {
+
+        public string TesterName { set; get; }
+        public string stringTestComment { set; get; }
+
+
+        public Try2Attribute(String TesterName, String stringTestComment)
+        {
+            this.TesterName = TesterName;
+            this.stringTestComment = stringTestComment;
+        }
+    }
+
+    [Try1Attribute("jbhuang99", "1.0", stringComment = "Under Developing", LastModificationDate = "14/01/01")]
+    [Try2Attribute("jbhuang99", "Under Testing")]
+    public class TryClass1
+    {
+    }
+    [Try1Attribute("syw", "1.0", stringComment = "Under Developing", LastModificationDate = "14/01/01")]
+    [Try2Attribute("syw", "Under Testing")]
+    public class TryClass2
+    {
+    }
+}
